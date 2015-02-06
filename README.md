@@ -6,6 +6,7 @@ Features:
 - allows specify hosts and demo database which would be created after install.
 - ability to determine a set of postgresql.conf parameters and absense postgresql.conf template. Template is not used due to the fact that the postgresql.conf differs from version to version on a set of parameters.
 - ability to specify another cluster directory.
+- ATTENTION: in this role were used unprivileged account for ssh connections and sudo for perform administrative tasks
 
 Known issues:
 
