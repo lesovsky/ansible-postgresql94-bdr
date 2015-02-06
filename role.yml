@@ -1,0 +1,9 @@
+---
+# Install PostgreSQL Bi-Directional replication on Enterprise Linux (RHEL/CentOS/Scientific)
+- hosts: all
+  sudo: yes
+  sudo_user: root
+  vars_files:
+    - 'defaults/main.yml'
+  tasks:
+    - include: 'tasks/main.yml'

@@ -1,0 +1,25 @@
+--- ansible-postgresql94-bdr/tasks/install-and-cleanup.yml
+
+- name: Install 2ndQuadrant PostgreSQL BDR official repository
+  yum:
+    name=http://packages.2ndquadrant.com/postgresql-bdr94-2ndquadrant/yum-repo-rpms/postgresql-bdr94-2ndquadrant-redhat-1.0-2.noarch.rpm
+    state=present
+
+- name: Install PostgreSQL BDR packages
+  yum:
+    name={{ item }}
+    state=latest
+  with_items:
+    - python-psycopg2
+    - postgresql-bdr94-bdr
+
+- name: Stop PostgreSQL if are running
+  sudo: yes
+  sudo_user: postgres
+  command: "/usr/pgsql-9.4/bin/pg_ctl -D {{ postgresql_datadir }} stop"
+  ignore_errors: yes
+
+- name: Remove old PostgreSQL data directory if exists
+  file:
+    dest={{ postgresql_datadir }}
+    state=absent

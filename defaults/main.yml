@@ -1,0 +1,29 @@
+# file: ansible-postgresql94-bdr/defaults/main.yml -- main variables
+
+# Basic setting
+postgresql_datadir: /var/lib/pgsql/9.4-bdr/data
+postgresql_upstream: 192.168.122.12
+postgresql_downstream: 192.168.122.13
+postgresql_bdr_database: bdrdemo
+postgresql_admin_user: postgres
+
+# Shared postgresql.conf setting
+postgresql_shared_guc:
+  - { regexp: "^#?listen_addresses = .*$", guc: "listen_addresses = '*'" }
+  - { regexp: "^#?max_replication_slots = .*$", guc: "max_replication_slots = 3" }
+  - { regexp: "^#?max_wal_senders = .*$", guc: "max_wal_senders = 4" }
+  - { regexp: "^#?wal_level = .*$", guc: "wal_level = 'logical'" }
+  - { regexp: "^#?track_commit_timestamp = .*$", guc: "track_commit_timestamp = on" }
+  - { regexp: "^#?shared_preload_libraries = .*$", guc: "shared_preload_libraries = 'bdr'" }
+  - { regexp: "^#?max_worker_processes = .*$", guc: "max_worker_processes = 10" }
+
+# Role specific postgresql.conf settings
+postgresql_upstream_guc:
+  - { guc: "bdr.connections = 'demo'" }
+  - { guc: "bdr.demo_dsn = 'host={{ postgresql_downstream }} dbname={{ postgresql_bdr_database }} user={{ postgresql_admin_user }}'" }
+
+postgresql_downstream_guc:
+  - { guc: "bdr.connections = 'demo'" }
+  - { guc: "bdr.demo_dsn = 'host={{ postgresql_upstream }} dbname={{ postgresql_bdr_database }} user={{ postgresql_admin_user }}'" }
+  - { guc: "bdr.demo_init_replica = on" }
+  - { guc: "bdr.demo_replica_local_dsn = 'host=127.0.0.1 dbname={{ postgresql_bdr_database }} user={{ postgresql_admin_user }}'" }
