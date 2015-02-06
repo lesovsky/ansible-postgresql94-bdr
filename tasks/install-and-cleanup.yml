@@ -1,4 +1,4 @@
---- ansible-postgresql94-bdr/tasks/install-and-cleanup.yml
+# file: ansible-postgresql94-bdr/tasks/install-and-cleanup.yml
 
 - name: Install 2ndQuadrant PostgreSQL BDR official repository
   yum:
@@ -10,8 +10,8 @@
     name={{ item }}
     state=latest
   with_items:
-    - python-psycopg2
     - postgresql-bdr94-bdr
+    - python-psycopg2
 
 - name: Stop PostgreSQL if are running
   sudo: yes

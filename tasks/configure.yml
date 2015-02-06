@@ -1,4 +1,4 @@
---- ansible-postgresql94-bdr/tasks/configure.yml
+# file: ansible-postgresql94-bdr/tasks/configure.yml
 
 - name: Initialize new PostgreSQL BDR cluster on upstream server
   sudo: yes
