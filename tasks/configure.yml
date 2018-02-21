@@ -1,8 +1,8 @@
 # file: ansible-postgresql94-bdr/tasks/configure.yml
 
 - name: Initialize new PostgreSQL BDR cluster on upstream server
-  sudo: yes
-  sudo_user: postgres
+  become: true
+  become_user: postgres
   command: "/usr/pgsql-9.4/bin/initdb -D {{ postgresql_datadir }} -A trust"
 
 - name: Configure pg_hba.conf
@@ -14,7 +14,7 @@
     mode: 0640
     line: "host    {{ item[0] }}     {{ postgresql_admin_user }}        {{ item[1] }}/32       trust"
   with_nested:
-    - [ 'all', 'replication' ] 
+    - [ 'all', 'replication' ]
     - [ "{{ postgresql_upstream }}", "{{ postgresql_downstream }}" ]
 
 - name: Configure postgresql.conf
@@ -26,11 +26,11 @@
     mode: 0640
     regexp: "{{ item.regexp }}"
     line: "{{ item.guc }}"
-  with_items: postgresql_shared_guc
+  with_items: "{{ postgresql_shared_guc }}"
 
 - name: Start PostgreSQL
-  sudo: yes
-  sudo_user: postgres
+  become: true
+  become_user: postgres
   command: "/usr/pgsql-9.4/bin/pg_ctl -D {{ postgresql_datadir }} start"
 
 - name: Create demo database
@@ -46,7 +46,7 @@
     group: "{{ postgresql_admin_user }}"
     mode: 0640
     line: "{{ item.guc }}"
-  with_items: postgresql_upstream_guc
+  with_items: "{{ postgresql_upstream_guc }}"
   when: ansible_default_ipv4.address == postgresql_upstream
 
 - name: Configure downstream server postgresql.conf
@@ -57,10 +57,10 @@
     group: "{{ postgresql_admin_user }}"
     mode: 0640
     line: "{{ item.guc }}"
-  with_items: postgresql_downstream_guc
+  with_items: "{{ postgresql_downstream_guc }}"
   when: ansible_default_ipv4.address == postgresql_downstream
 
 - name: Final PostgreSQL restart
-  sudo: yes
-  sudo_user: postgres
+  become: true
+  become_user: postgres
   command: "/usr/pgsql-9.4/bin/pg_ctl -D {{ postgresql_datadir }} restart"
